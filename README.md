@@ -1,5 +1,7 @@
 # Multisite Request Matcher
 
+[![Build Status](https://travis-ci.com/drunomics/multisite-request-matcher.svg?branch=1.x)](https://travis-ci.com/drunomics/multisite-request-matcher)
+
 Matches requests to multisites based upon configuration driven by environment variables.
 The packages works well with symfony/dotenv and symfony/http-foundation as used by drupal/core.
 
