@@ -1,0 +1,20 @@
+{
+    "name": "drunomics/multisite-request-matcher",
+    "description": "Matches requests to multisite hosts.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wolfgang Ziegler",
+            "email": "fago@wolfgangziegler.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "drunomics\\MultisiteRequestMatcher\\": "src"
+        }
+    },
+    "require": {
+      "symfony/http-foundation": "^3.4.15"
+    }
+}
