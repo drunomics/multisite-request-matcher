@@ -36,7 +36,7 @@ That can be used to construct URLs like the following:
         https://api--site-b_stage.example.com
         https://admin--site-a_stage.example.com
         https://admin--site-b_stage.example.com
-        
+
 - Per site domains with variants:
 
         https://api.site-a.com
@@ -61,7 +61,7 @@ The following environment variables may be set to configure the request matcher:
 
 ## Results
 
-- The matched host is set as trusted host to the symfony/http-foundation request API.
+- The matched host is set as trusted host to the symfony/http-foundation request API via trusted host patterns.
 - The following environment variables are set:
 
 | Variable name | Example Value | Description |

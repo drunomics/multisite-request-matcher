@@ -15,7 +15,7 @@ class RequestMatcher {
    *
    * @var static
    */
-  static $instance
+  static $instance;
 
   /**
    * Gets an instance, while making sure there is only one instantiated.
@@ -69,7 +69,7 @@ class RequestMatcher {
    *
    * @var string
    */
-  protected $multisiteDomainSeparator = '_'
+  protected $multisiteDomainSeparator = '_';
 
   /**
    * Creates the object.
@@ -133,11 +133,10 @@ class RequestMatcher {
       return $site;
     }
 
-    if ($request) {
+    if (!$request) {
       $request = Request::createFromGlobals();
     }
 
-    // @todo: Add CLI check here
     $host = $request->getHost();
     $site_host = $host;
 
@@ -146,13 +145,13 @@ class RequestMatcher {
       $matches = [];
       $suffix = $this->multisiteDomainSeparator . $this->multisiteDomain;
       $variants = implode('|', $this->variants);
-      if (preg_match('^(' . $variants . ')' . str_replace('.', '\.', $this->variantSeparator . '(a-z\-]+)' . $suffix) . '$', $host, $matches)) {
-        $site_variant = $matches[0];
-        $site = $matches[1];
+      if (preg_match('/^(' . $variants . ')' . str_replace('.', '\.', $this->variantSeparator . '([a-z\-]+)' . $suffix) . '$/', $host, $matches)) {
+        $site_variant = $matches[1];
+        $site = $matches[2];
       }
-      elseif (preg_match('^(a-z\-]+)' . str_replace('.', '\.', $suffix) . '$', $host, $matches)) {
+      elseif (preg_match('/^([a-z\-]+)' . str_replace('.', '\.', $suffix) . '$/', $host, $matches)) {
         $site_variant = NULL;
-        $site = $matches[0];
+        $site = $matches[1];
       }
       elseif ($host == $this->multisiteDomain) {
         $site = $this->defaultSite;
@@ -168,17 +167,20 @@ class RequestMatcher {
     }
     else {
       // There is no common base domain, thus collect of possible hosts.
-      $host_patterns = [];
       $matches = [];
       foreach ($this->sites as $current_site) {
         $site_domain = getenv('APP_SITE_DOMAIN--' . $current_site);
+        if (empty($site_domain)) {
+          throw new RequestMatchException("Missing API_SITE_DOMAIN environment variable for site " . strip_tags($current_site) . ".");
+        }
+
         if (preg_match(str_replace('.', '\.', $site_domain), $host)) {
           $site = $current_site;
           $site_variant = NULL;
           // Check for a site-variant.
           $variants = implode('|', $this->variants);
-          if (preg_match(str_replace('.', '\.', '^(a-z]+)' . $this->variantSeparator . $site_domain), $host)) {
-            $site_variant = $matches[0];
+          if (preg_match(str_replace('.', '\.', '/^(' . $variants . ')' . $this->variantSeparator . $site_domain), $host . '/')) {
+            $site_variant = $matches[1];
           }
           break;
         }
