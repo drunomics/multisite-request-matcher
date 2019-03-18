@@ -123,6 +123,27 @@ class RequestMatcher {
   }
 
   /**
+   * Gets the same site variables as set during request matching.
+   *
+   * Useful for setting the same environment variables during CLI invocations as
+   * during regular request.
+   */
+  public function getSiteVariables() {
+    $site = getenv('SITE') ?: $this->defaultSite;
+    $vars = 'SITE=' . $site . "\n";
+    $vars .= 'SITE_VARIANT=' . "\n";
+    if ($this->multisiteDomain) {
+      $host = $this->defaultSite . $this->multisiteDomainSeparator . $this->multisiteDomain;
+    }
+    else {
+      $host = getenv('APP_SITE_DOMAIN--' . $site);
+    }
+    $vars .= 'SITE_HOST=' . $host . "\n";
+    $vars .= 'SITE_MAIN_HOST=' . $host . "\n";
+    return $vars;
+  }
+
+  /**
    * Matches the request based upon the given config.
    *
    * If successful, the following environment variables are set:
@@ -143,16 +164,8 @@ class RequestMatcher {
   public function match(Request $request = NULL) {
     // Do not attempt to match on CLI but apply the default site.
     if (!$request && php_sapi_name() == "cli") {
-      $site = getenv('SITE') ?: $this->defaultSite;
-      putenv('SITE=' . $site);
-      putenv('SITE_VARIANT=');
-      if ($this->multisiteDomain) {
-        putenv('SITE_HOST=' . $this->defaultSite . $this->multisiteDomainSeparator . $this->multisiteDomain);
-      }
-      else {
-        putenv('SITE_HOST=' . getenv('APP_SITE_DOMAIN--' . $site));
-      }
-      return $site;
+      putenv($this->getSiteVariables());
+      return getenv('SITE');
     }
 
     if (!$request) {

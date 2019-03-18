@@ -3,6 +3,7 @@
     "description": "Matches requests to multisite hosts.",
     "type": "library",
     "license": "MIT",
+    "bin": "bin/request-matcher-site-variables",
     "authors": [
         {
             "name": "Wolfgang Ziegler",

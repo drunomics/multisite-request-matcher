@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @file
+ * Small CLI script for printing SITE environment variables
+ */
+
+// Support multiple autoloader locations.
+if (is_file($autoload = __DIR__ . '/../vendor/autoload.php')) {
+  require($autoload);
+}
+elseif (is_file($autoload = __DIR__ . '/../../vendor/autoload.php')) {
+  require($autoload);
+}
+elseif (is_file($autoload = __DIR__ . '/../../../vendor/autoload.php')) {
+  require($autoload);
+}
+
+echo \drunomics\MultisiteRequestMatcher\RequestMatcher::getInstance()
+  ->getSiteVariables();
