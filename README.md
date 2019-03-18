@@ -71,6 +71,26 @@ The following environment variables may be set to configure the request matcher:
 | SITE | site-a | The active site. |
 | SITE_VARIANT | api | The active site variant. Empty if no variant is active.|
 | SITE_HOST | api--site-b_stage.example.com | The full site for the active site and variant. |
+| SITE_MAIN_HOST | stage.example.com | The site's main host, without any variant. |
+
+## Usage with Drupal
+
+* Best, invoke the request matcher via the composer autoloader; that makes sure it is invoked very early and has matched
+  requests before anything else goes on. For an example refer to [this](https://github.com/drunomics/drupal-project/blob/4.x/composer.json#L58)
+  
+  Be sure your environment variables are set and invoke it like that:
+  
+    
+    $site = drunomics\MultisiteRequestMatcher\RequestMatcher::getInstance()
+      ->match();
+  
+* Add the following line to Drupal's sites.php such that Drupal can pick up the matched site. The site name of the
+  APP_SITES variable should match the Drupal site directory names:
+
+
+    $sites[$request->getHost()] = getenv('SITE');
+
+* Remove any trusted host patterns from Drupal as the request matcher already checked it.
 
 ## Credits
  
