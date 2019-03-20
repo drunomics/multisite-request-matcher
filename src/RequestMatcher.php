@@ -130,6 +130,10 @@ class RequestMatcher {
    */
   public static function getSiteVariables() {
     $site = getenv('SITE') ?: getenv('APP_DEFAULT_SITE');
+    if (!$site) {
+      $sites = explode(' ', getenv('APP_SITES'));
+      $site = reset($sites);
+    }
     $vars = 'SITE=' . $site . "\n";
     $vars .= 'SITE_VARIANT=' . "\n";
     if ($domain = getenv('APP_MULTISITE_DOMAIN')) {
