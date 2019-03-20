@@ -73,6 +73,12 @@ The following environment variables may be set to configure the request matcher:
 | SITE_HOST | api--site-b_stage.example.com | The full site for the active site and variant. |
 | SITE_MAIN_HOST | stage.example.com | The site's main host, without any variant. |
 
+## CLI invocations
+
+In order to make the same environment variables available for CLI invocations, the package provides the binary
+`request-matcher-site-variables` which outputs them based upon the set `$SITE` variable. Site variants are not supported
+in CLI requests, thus SITE_VARIANT is is always empty.
+
 ## Usage with Drupal
 
 * Best, invoke the request matcher via the composer autoloader; that makes sure it is invoked very early and has matched
