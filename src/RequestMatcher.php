@@ -3,6 +3,7 @@
 namespace drunomics\MultisiteRequestMatcher;
 
 
+use Drupal\Core\Render\Markup;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -123,27 +124,58 @@ class RequestMatcher {
   }
 
   /**
-   * Gets the same site variables as set during request matching.
+   * Determines the currently active site.
    *
-   * Useful for setting the same environment variables during CLI invocations as
-   * during regular request.
+   * @return string
+   *   The active site's name.
    */
-  public static function getSiteVariables() {
+  public static function determineActiveSite() {
     $site = getenv('SITE') ?: getenv('APP_DEFAULT_SITE');
     if (!$site) {
       $sites = explode(' ', getenv('APP_SITES'));
       $site = reset($sites);
     }
-    $vars = 'SITE=' . $site . "\n";
-    $vars .= 'SITE_VARIANT=' . "\n";
+    return $site;
+  }
+
+  /**
+   * Gets the same site variables as set during request matching.
+   *
+   * Useful for setting the same environment variables during CLI invocations as
+   * during regular request.
+   *
+   * @param string $site
+   *   (optional) The site to use.
+   *
+   * @return array
+   *   The array of site variables.
+   */
+  public static function getSiteVariables($site = NULL) {
+    $site = $site ?: static::determineActiveSite();
+    $vars = [];
+    $vars['SITE'] = $site;
+    $vars['SITE_VARIANT'] = '';
     if ($domain = getenv('APP_MULTISITE_DOMAIN')) {
       $host = $site . getenv('APP_MULTISITE_DOMAIN_PREFIX_SEPARATOR') . $domain;
     }
     else {
       $host = getenv('APP_SITE_DOMAIN--' . $site);
     }
-    $vars .= 'SITE_HOST=' . $host . "\n";
-    $vars .= 'SITE_MAIN_HOST=' . $host . "\n";
+    $vars['SITE_HOST'] = $host;
+    $vars['SITE_MAIN_HOST'] = $host;
+    return $vars;
+  }
+
+  /**
+   * Gets the site variables as string.
+   *
+   * @return string
+   */
+  public static function printSiteVariables() {
+    $vars = '';
+    foreach (static::getSiteVariables() as $variable => $value) {
+      $vars .= "$variable=$value\n";
+    }
     return $vars;
   }
 
@@ -168,8 +200,11 @@ class RequestMatcher {
   public function match(Request $request = NULL) {
     // Do not attempt to match on CLI but apply the default site.
     if (!$request && php_sapi_name() == "cli") {
-      putenv(static::getSiteVariables());
-      return getenv('SITE');
+      $site = static::determineActiveSite();
+      foreach (static::getSiteVariables($site) as $variable => $value) {
+        putenv("$variable=$value");
+      }
+      return $site;
     }
 
     if (!$request) {
