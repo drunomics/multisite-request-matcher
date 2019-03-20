@@ -20,6 +20,4 @@ elseif (is_file($autoload = __DIR__ . '/../../../../../vendor/autoload.php')) {
   require($autoload);
 }
 
-
-echo \drunomics\MultisiteRequestMatcher\RequestMatcher::getInstance()
-  ->getSiteVariables();
+echo \drunomics\MultisiteRequestMatcher\RequestMatcher::getSiteVariables();
