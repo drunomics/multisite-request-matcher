@@ -54,8 +54,8 @@ class RequestMatcherTest extends TestCase {
     putenv("APP_SITE_VARIANTS=api admin");
     putenv("APP_DEFAULT_SITE=site-a");
     putenv("APP_SITES=site-a site-b");
-    putenv("APP_SITE_DOMAIN--site-a=site-a.com");
-    putenv("APP_SITE_DOMAIN--site-b=site-b.com");
+    putenv("APP_SITE_DOMAIN__site-a=site-a.com");
+    putenv("APP_SITE_DOMAIN__site-b=site-b.com");
     $this->assertHostMatches('site-a.com', 'site-a', '');
     $this->assertHostMatches('api.site-a.com', 'site-a', 'api');
     $this->assertHostMatches('admin.site-a.com', 'site-a', 'admin');
@@ -71,8 +71,8 @@ class RequestMatcherTest extends TestCase {
     putenv("APP_SITE_VARIANT_SEPARATOR=.");
     putenv("APP_DEFAULT_SITE=site-a");
     putenv("APP_SITES=site-a site-b");
-    putenv("APP_SITE_DOMAIN--site-a=site-a.com");
-    putenv("APP_SITE_DOMAIN--site-b=site-b.com");
+    putenv("APP_SITE_DOMAIN__site-a=site-a.com");
+    putenv("APP_SITE_DOMAIN__site-b=site-b.com");
     $this->assertHostMatches('site-a.com', 'site-a', '');
     $this->assertHostMatches('site-b.com', 'site-b', '');
     $this->assertHostDoesNotMatch('com');

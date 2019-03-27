@@ -59,7 +59,7 @@ The following environment variables may be set to configure the request matcher:
 | APP_SITE_VARIANT_SEPARATOR | No | -- | The separator between the variant name and the host, defaults to "--". |
 | APP_MULTISITE_DOMAIN | ~ | stage.codebase.dev | A common base domain for all sites. Required when multisite base domains should be used. |
 | APP_MULTISITE_DOMAIN_PREFIX_SEPARATOR | No | _ | The separator between the site name and the common multisite base domain. Defaults to '_'. |
-| APP_SITE_DOMAIN--{{ SITE }} | ~ | site-a.com | The per-site domain - required when per-site domains should be used. One variable per site must be provided, e.g. for site-a the variable name would be `APP_SITE_DOMAIN--site-a` |
+| APP_SITE_DOMAIN__{{ SITE }} | ~ | site-a.com | The per-site domain - required when per-site domains should be used. One variable per site must be provided, e.g. for site-a the variable name would be `APP_SITE_DOMAIN__site-a` |
 
 ## Results
 
