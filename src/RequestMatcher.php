@@ -2,8 +2,6 @@
 
 namespace drunomics\MultisiteRequestMatcher;
 
-
-use Drupal\Core\Render\Markup;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -16,7 +14,7 @@ class RequestMatcher {
    *
    * @var static
    */
-  static $instance;
+  private static $instance;
 
   /**
    * Gets an instance, while making sure there is only one instantiated.
@@ -120,7 +118,7 @@ class RequestMatcher {
         $server['CONTENT_TYPE'] = $_SERVER['HTTP_CONTENT_TYPE'];
       }
     }
-    return (new Request($_GET, $_POST, array(), $_COOKIE, $_FILES, $server));
+    return (new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $server));
   }
 
   /**
@@ -186,9 +184,9 @@ class RequestMatcher {
    *  - SITE
    *  - SITE_VARIANT
    *  - SITE_HOST
-   *  - SITE_MAIN_HOST
+   *  - SITE_MAIN_HOST.
    *
-   * @param \Symfony\Component\HttpFoundation\Request|NULL $request
+   * @param \Symfony\Component\HttpFoundation\Request|null $request
    *   (optional) The request object.
    *
    * @return string
