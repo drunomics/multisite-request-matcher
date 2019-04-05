@@ -177,9 +177,22 @@ class RequestMatcher {
     if (!in_array($variant, $this->variants)) {
       return NULL;
     }
-    $site = static::determineActiveSite();
-    $variant_host = $variant . $this->variantSeparator . $site . $this->multisiteDomainSeparator . $this->multisiteDomain;
+    $site_variables = static::getSiteVariables();
+    $url_scheme = static::getUrlScheme();
+    $variant_host = $url_scheme . $variant . $this->variantSeparator . $site_variables['SITE_HOST'];
+
     return $variant_host;
+  }
+
+  /**
+   * @return string
+   *   Url scheme value from env var.
+   */
+  public static function getUrlScheme() {
+    if ($url_scheme = getenv('URL_SCHEME')) {
+      return $url_scheme . "://";
+    }
+    return "//";
   }
 
   /**
