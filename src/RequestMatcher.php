@@ -178,8 +178,7 @@ class RequestMatcher {
       return NULL;
     }
     $site_variables = static::getSiteVariables();
-    $url_scheme = static::getUrlScheme();
-    $variant_host = $url_scheme . $variant . $this->variantSeparator . $site_variables['SITE_HOST'];
+    $variant_host = $variant . $this->variantSeparator . $site_variables['SITE_HOST'];
 
     return $variant_host;
   }
