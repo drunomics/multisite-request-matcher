@@ -167,7 +167,7 @@ class RequestMatcher {
   /**
    * Gets the variant host.
    *
-   * @param $variant
+   * @param string $variant
    *   Variant name.
    *
    * @return string|null
@@ -184,6 +184,8 @@ class RequestMatcher {
   }
 
   /**
+   * Gets the url scheme.
+   *
    * @return string
    *   Url scheme value from env var.
    */
