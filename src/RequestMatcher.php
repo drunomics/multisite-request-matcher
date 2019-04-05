@@ -171,29 +171,16 @@ class RequestMatcher {
    *   Variant name.
    *
    * @return string|null
-   *   Variant url or null if variant incorrect.
+   *   Variant hostname or null if variant incorrect.
    */
   public function getHostForSiteVariant($variant) {
     if (!in_array($variant, $this->variants)) {
       return NULL;
     }
     $site_variables = static::getSiteVariables();
-    $variant_host = $variant . $this->variantSeparator . $site_variables['SITE_HOST'];
+    $variant_host = $variant . $this->variantSeparator . $site_variables['SITE_MAIN_HOST'];
 
     return $variant_host;
-  }
-
-  /**
-   * Gets the url scheme.
-   *
-   * @return string
-   *   Url scheme value from env var.
-   */
-  public static function getUrlScheme() {
-    if ($url_scheme = getenv('URL_SCHEME')) {
-      return $url_scheme . "://";
-    }
-    return "//";
   }
 
   /**
