@@ -165,21 +165,21 @@ class RequestMatcher {
   }
 
   /**
-   * Gets the variant url.
+   * Gets the variant host.
    *
-   * @param string $variant
+   * @param $variant
    *   Variant name.
    *
-   * @return bool|string
-   *   Variant url or bool if variant incorrect.
+   * @return string|null
+   *   Variant url or null if variant incorrect.
    */
   public function getHostForSiteVariant($variant) {
     if (!in_array($variant, $this->variants)) {
-      return FALSE;
+      return NULL;
     }
     $site = static::determineActiveSite();
-    $url = getenv('URL_SCHEME') . '://' . $variant . $this->variantSeparator . $site . $this->multisiteDomainSeparator . $this->multisiteDomain;
-    return $url;
+    $variant_host = $variant . $this->variantSeparator . $site . $this->multisiteDomainSeparator . $this->multisiteDomain;
+    return $variant_host;
   }
 
   /**
