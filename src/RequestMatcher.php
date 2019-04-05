@@ -165,6 +165,25 @@ class RequestMatcher {
   }
 
   /**
+   * Gets the variant host.
+   *
+   * @param string $variant
+   *   Variant name.
+   *
+   * @return string|null
+   *   Variant hostname or null if variant incorrect.
+   */
+  public function getHostForSiteVariant($variant) {
+    if (!in_array($variant, $this->variants)) {
+      return NULL;
+    }
+    $site_variables = static::getSiteVariables();
+    $variant_host = $variant . $this->variantSeparator . $site_variables['SITE_MAIN_HOST'];
+
+    return $variant_host;
+  }
+
+  /**
    * Gets the site variables as string.
    *
    * @return string
