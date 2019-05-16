@@ -137,6 +137,16 @@ class RequestMatcher {
   }
 
   /**
+   * Determines the currently active site variant.
+   *
+   * @return string
+   *   The active site variant, '' for the default variant.
+   */
+  public static function determineActiveSiteVariant() {
+    return getenv('SITE_VARIANT') ?: '';
+  }
+
+  /**
    * Gets the same site variables as set during request matching.
    *
    * Useful for setting the same environment variables during CLI invocations as
@@ -144,20 +154,26 @@ class RequestMatcher {
    *
    * @param string $site
    *   (optional) The site to use.
+   * @param string $site_variant
+   *   (optional) The site variant to use.
    *
    * @return array
    *   The array of site variables.
    */
-  public static function getSiteVariables($site = NULL) {
+  public static function getSiteVariables($site = NULL, $site_variant = '') {
     $site = $site ?: static::determineActiveSite();
     $vars = [];
     $vars['SITE'] = $site;
-    $vars['SITE_VARIANT'] = '';
+    $vars['SITE_VARIANT'] = $site_variant ?: static::determineActiveSiteVariant();
     if ($domain = getenv('APP_MULTISITE_DOMAIN')) {
       $host = $site . getenv('APP_MULTISITE_DOMAIN_PREFIX_SEPARATOR') . $domain;
     }
     else {
       $host = getenv('APP_SITE_DOMAIN__' . $site);
+    }
+    if ($vars['SITE_VARIANT']) {
+      $separator = getenv('APP_SITE_VARIANT_SEPARATOR') ?: '--';
+      $host = $vars['SITE_VARIANT'] . $separator . $host;
     }
     $vars['SITE_HOST'] = $host;
     $vars['SITE_MAIN_HOST'] = $host;
