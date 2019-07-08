@@ -280,7 +280,7 @@ class RequestMatcher {
       $matches = [];
       $variants = implode('|', $this->variants);
       foreach ($this->sites as $current_site) {
-        $site_domain = getenv('APP_SITE_DOMAIN__' . $current_site);
+        $site_domain = getenv('APP_SITE_DOMAIN__' . str_replace('-', '_', $current_site));
         if (empty($site_domain)) {
           throw new RequestMatchException("Missing API_SITE_DOMAIN environment variable for site " . strip_tags($current_site) . ".");
         }
