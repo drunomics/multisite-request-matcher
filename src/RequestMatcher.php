@@ -29,6 +29,13 @@ class RequestMatcher {
   }
 
   /**
+   * The last request that has been matched.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $lastMatchedRequest;
+
+  /**
    * The allowed site variants (like admin, api, ...).
    *
    * @var string[]
@@ -243,7 +250,7 @@ class RequestMatcher {
     if (!$request) {
       $request = $this->getRequestFromGlobals();
     }
-
+    $this->lastMatchedRequest = $request;
     $host = $request->getHost();
     $site_host = $host;
 
@@ -314,6 +321,19 @@ class RequestMatcher {
     putenv('SITE_HOST=' . $site_host);
     putenv('SITE_MAIN_HOST=' . $site_main_host);
     return $site;
+  }
+
+  /**
+   * Gets the last request that has been matched, if any.
+   *
+   * Note that request objects created by the request matcher do not have forms
+   * parsed!
+   *
+   * @return \Symfony\Component\HttpFoundation\Request|null
+   *   The last request that has been matched, if any.
+   */
+  public function getLastMatchedRequest() {
+    return $this->lastMatchedRequest;
   }
 
 }
