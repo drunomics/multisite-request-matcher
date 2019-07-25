@@ -80,6 +80,51 @@ class RequestMatcherTest extends TestCase {
     $this->assertHostDoesNotMatch('admin.site-b.com');
     $this->assertHostDoesNotMatch('api.site-b.com');
     $this->assertHostDoesNotMatch('api--site-b.com');
+
+    // Test with per-site domains and aliases.
+    putenv("APP_MULTISITE_DOMAIN");
+    putenv("APP_SITE_VARIANT_SEPARATOR=.");
+    putenv("APP_SITE_VARIANTS=api admin");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    putenv("APP_SITE_DOMAIN__site_a=site-a.com");
+    putenv("APP_SITE_DOMAIN_ALIASES__site_a=site-a.alias.com,site-a.alias2.com");
+    putenv("APP_SITE_DOMAIN__site_b=site-b.com");
+    $this->assertHostMatches('site-a.com', 'site-a', '');
+    $this->assertHostMatches('api.site-a.com', 'site-a', 'api');
+    $this->assertHostMatches('admin.site-a.com', 'site-a', 'admin');
+    $this->assertHostMatches('site-a.alias.com', 'site-a', '');
+    $this->assertHostMatches('api.site-a.alias.com', 'site-a', 'api');
+    $this->assertHostMatches('admin.site-a.alias.com', 'site-a', 'admin');
+    $this->assertHostMatches('site-a.alias2.com', 'site-a', '');
+    $this->assertHostMatches('api.site-a.alias2.com', 'site-a', 'api');
+    $this->assertHostMatches('admin.site-a.alias2.com', 'site-a', 'admin');
+    $this->assertHostDoesNotMatch('site-a.alias3.com', 'site-a', '');
+    $this->assertHostDoesNotMatch('api.site-a.alias3.com', 'site-a', 'api');
+    $this->assertHostDoesNotMatch('admin.site-a.alias3.com', 'site-a', 'admin');
+    $this->assertHostMatches('api.site-b.com', 'site-b', 'api');
+    $this->assertHostMatches('admin.site-b.com', 'site-b', 'admin');
+    $this->assertHostMatches('site-b.com', 'site-b', '');
+    $this->assertHostDoesNotMatch('com');
+    $this->assertHostDoesNotMatch('foo.site-b.com');
+    $this->assertHostDoesNotMatch('api--site-b.com');
+
+    putenv("APP_MULTISITE_DOMAIN");
+    putenv("APP_SITE_VARIANTS");
+    putenv("APP_SITE_VARIANT_SEPARATOR=.");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    putenv("APP_SITE_DOMAIN__site_a=site-a.com");
+    putenv("APP_SITE_DOMAIN_ALIASES__site_a=site-a.alias.com");
+    putenv("APP_SITE_DOMAIN__site_b=site-b.com");
+    $this->assertHostMatches('site-a.com', 'site-a', '');
+    $this->assertHostMatches('site-a.alias.com', 'site-a', '');
+    $this->assertHostMatches('site-b.com', 'site-b', '');
+    $this->assertHostDoesNotMatch('com');
+    $this->assertHostDoesNotMatch('foo.site-b.com');
+    $this->assertHostDoesNotMatch('admin.site-b.com');
+    $this->assertHostDoesNotMatch('api.site-b.com');
+    $this->assertHostDoesNotMatch('api--site-b.com');
   }
 
   /**

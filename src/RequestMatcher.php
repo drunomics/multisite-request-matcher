@@ -284,15 +284,21 @@ class RequestMatcher {
         if (empty($site_domain)) {
           throw new RequestMatchException("Missing API_SITE_DOMAIN environment variable for site " . strip_tags($current_site) . ".");
         }
+        // Support additional aliases.
+        $site_domains[] = $site_domain;
+        if ($aliases = getenv('APP_SITE_DOMAIN_ALIASES__' . str_replace('-', '_', $current_site))) {
+          $site_domains = array_merge($site_domains, array_map('trim', explode(',', $aliases)));
+        }
 
-        if (preg_match('/^' . str_replace('.', '\.', $site_domain) . '$/', $host)) {
+        $domains_regex = '(' . str_replace('.', '\.', implode('|', $site_domains)) . ')';
+        if (preg_match('/^' . $domains_regex . '$/', $host)) {
           $site_main_host = $site_domain;
           $site = $current_site;
           $site_variant = NULL;
           break;
         }
         // Check for a site-variant match.
-        if (preg_match('/^' . str_replace('.', '\.', '(' . $variants . ')' . $this->variantSeparator . $site_domain . '$') . '/', $host, $matches)) {
+        if (preg_match('/^' . str_replace('.', '\.', '(' . $variants . ')' . $this->variantSeparator) . $domains_regex . '$/', $host, $matches)) {
           $site_main_host = $site_domain;
           $site = $current_site;
           $site_variant = $matches[1];
