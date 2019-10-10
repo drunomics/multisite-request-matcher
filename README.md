@@ -73,7 +73,7 @@ The following environment variables may be set to configure the request matcher:
 | ------------- | ------------- | ----------- |
 | SITE | site-a | The active site. |
 | SITE_VARIANT | api | The active site variant. Empty if no variant is active.|
-| SITE_HOST | api--site-b_stage.example.com | The full site for the active site and variant. |
+| SITE_HOST | api--site-b_stage.example.com | The site's full host for the active site and variant. |
 | SITE_MAIN_HOST | stage.example.com | The site's main host, without any variant. |
 
 ## CLI invocations
