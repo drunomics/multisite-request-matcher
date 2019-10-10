@@ -282,10 +282,30 @@ class RequestMatcher {
         throw new RequestMatchException("Unknown site " . strip_tags($site) . " given.");
       }
     }
+    // Support a predefined SITE.
+    elseif ($current_site = getenv('SITE')) {
+      $site_domain = getenv('APP_SITE_DOMAIN');
+      if (empty($site_domain)) {
+        throw new RequestMatchException("Missing API_SITE_DOMAIN environment variable for predefined site " . strip_tags($current_site) . ".");
+      }
+      // Support additional aliases.
+      $site_domains[] = $site_domain;
+      if ($aliases = getenv('APP_SITE_DOMAIN_ALIASES')) {
+        $site_domains = array_merge($site_domains, array_map('trim', explode(',', $aliases)));
+      }
+      $site_variant = $this->matchHost($site_domains, $host);
+      if ($site_variant !== FALSE) {
+        // Match !
+        $site_main_host = $site_domain;
+        $site = $current_site;
+      }
+      else {
+        throw new RequestMatchException("Unable to match the site domain for the site " . $current_site);
+      }
+    }
     else {
       // There is no common base domain, thus collect of possible hosts.
       $matches = [];
-      $variants = implode('|', $this->variants);
       foreach ($this->sites as $current_site) {
         $site_domain = getenv('APP_SITE_DOMAIN__' . str_replace('-', '_', $current_site));
         if (empty($site_domain)) {
@@ -296,19 +316,11 @@ class RequestMatcher {
         if ($aliases = getenv('APP_SITE_DOMAIN_ALIASES__' . str_replace('-', '_', $current_site))) {
           $site_domains = array_merge($site_domains, array_map('trim', explode(',', $aliases)));
         }
-
-        $domains_regex = '(' . str_replace('.', '\.', implode('|', $site_domains)) . ')';
-        if (preg_match('/^' . $domains_regex . '$/', $host)) {
+        $site_variant = $this->matchHost($site_domains, $host);
+        if ($site_variant !== FALSE) {
+          // Match !
           $site_main_host = $site_domain;
           $site = $current_site;
-          $site_variant = NULL;
-          break;
-        }
-        // Check for a site-variant match.
-        if (preg_match('/^' . str_replace('.', '\.', '(' . $variants . ')' . $this->variantSeparator) . $domains_regex . '$/', $host, $matches)) {
-          $site_main_host = $site_domain;
-          $site = $current_site;
-          $site_variant = $matches[1];
           break;
         }
       }
@@ -321,6 +333,30 @@ class RequestMatcher {
     putenv('SITE_HOST=' . $site_host);
     putenv('SITE_MAIN_HOST=' . $site_main_host);
     return $site;
+  }
+
+  /**
+   * Matches the host against the given domains.
+   *
+   * @param array $site_domains
+   *   The array of domains.
+   * @param string $host
+   *   The host to match it against.
+   *
+   * @return bool|string|null
+   *   The site variant, NULL for no variant, or FALSE if no match was found.
+   */
+  protected function matchHost(array $site_domains, $host) {
+    $domains_regex = '(' . str_replace('.', '\.', implode('|', $site_domains)) . ')';
+    if (preg_match('/^' . $domains_regex . '$/', $host)) {
+      return NULL;
+    }
+    // Check for a site-variant match.
+    $variants = implode('|', $this->variants);
+    if (preg_match('/^' . str_replace('.', '\.', '(' . $variants . ')' . $this->variantSeparator) . $domains_regex . '$/', $host, $matches)) {
+      return $matches[1];
+    }
+    return FALSE;
   }
 
   /**

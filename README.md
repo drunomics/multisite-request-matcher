@@ -17,7 +17,7 @@ any suiting prefix. Next, it's used for CLI invocations if no SITE variable is g
 ## Configuration
 
 The package support construction site URLs via via a common base-domain ($APP_MULTISITE_DOMAIN) or via per site domains.
-Optional, site variantes like "admin" or "api" are supported - useful if the app uses multiple hosts for things like the
+Optional, site variants like "admin" or "api" are supported - useful if the app uses multiple hosts for things like the
 admin interface or an API endpoint.
 
 That can be used to construct URLs like the following:
@@ -32,7 +32,7 @@ That can be used to construct URLs like the following:
         https://www.site-a.com
         https://wwww.site-b.com
 
-- Commom multisite domain with variants:
+- Common multisite domain with variants:
 
         https://api--site-a_stage.example.com
         https://api--site-b_stage.example.com
@@ -60,7 +60,9 @@ The following environment variables may be set to configure the request matcher:
 | APP_MULTISITE_DOMAIN | ~ | stage.codebase.dev | A common base domain for all sites. Required when multisite base domains should be used. |
 | APP_MULTISITE_DOMAIN_PREFIX_SEPARATOR | No | _ | The separator between the site name and the common multisite base domain. Defaults to '_'. |
 | APP_SITE_DOMAIN__{{ SITE }} | ~ | site-a.com | The per-site domain - required when per-site domains should be used. One variable per site must be provided with dashes replaced to underscores, e.g. for site-a the variable name would be `APP_SITE_DOMAIN__site_a` |
-| APP_SITE_DOMAIN_ALIASES__{{ SITE }} | ~ | site-a.hoster.com,site-a.hoster.com | Comma separated, per-site domain aliases that are allowed in addition to the main domain. Useful when access should be allowed via some non-primary domains also; e.g., when behind a CDN. One variable per site must be provided with dashes replaced to underscores, e.g. for site-a the variable name would be `APP_SITE_DOMAIN_ALIASES__site_a` |
+| APP_SITE_DOMAIN_ALIASES__{{ SITE }} | No | site-a.hoster.com,site-a.hoster.com | Comma separated, per-site domain aliases that are allowed in addition to the main domain. Useful when access should be allowed via some non-primary domains also; e.g., when behind a CDN. One variable per site must be provided with dashes replaced to underscores, e.g. for site-a the variable name would be `APP_SITE_DOMAIN_ALIASES__site_a` |
+| APP_SITE_DOMAIN | ~ | site-a.com | If an environment is bound to a fixed site, the site's domain. Requires SITE to be predefined. |
+| APP_SITE_DOMAIN_ALIASES | No | site-a.host.com,site-a.host2.com | If an environment is bound to a fixed site, the site's domain aliases (see above). Requires SITE to be predefined. |
 
 ## Results
 

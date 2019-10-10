@@ -13,6 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 class RequestMatcherTest extends TestCase {
 
   /**
+   * Whether to clear the site variable between matches.
+   *
+   * @var bool
+   */
+  protected $clearSite = TRUE;
+
+  /**
    * Tests matching.
    *
    * @covers ::match
@@ -125,12 +132,32 @@ class RequestMatcherTest extends TestCase {
     $this->assertHostDoesNotMatch('admin.site-b.com');
     $this->assertHostDoesNotMatch('api.site-b.com');
     $this->assertHostDoesNotMatch('api--site-b.com');
+
+    // Test pre-defined site with predefined domain.
+    $this->clearSite = FALSE;
+    putenv("APP_MULTISITE_DOMAIN");
+    putenv("APP_SITE_VARIANT_SEPARATOR=.");
+    putenv("APP_SITE_VARIANTS=api admin");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    putenv("APP_SITE_DOMAIN=site-b.com");
+    putenv("APP_SITE_DOMAIN_ALIASES=site-b.alias.com");
+    $this->assertHostMatches('site-b.com', 'site-b', '');
+    $this->assertHostMatches('site-b.alias.com', 'site-b', '');
+    $this->assertHostMatches('admin.site-b.com', 'site-b', 'admin');
+    $this->assertHostMatches('api.site-b.com', 'site-b', 'api');
+    $this->assertHostDoesNotMatch('foo.site-b.com');
+    $this->assertHostDoesNotMatch('com');
+    $this->assertHostDoesNotMatch('site-a.com');
   }
 
   /**
    * Asserts the host matches.
    */
   protected function assertHostMatches($host, $site, $site_variant = '') {
+    if ($this->clearSite) {
+      putenv("SITE");
+    }
     $request = $this->prophesize(Request::class);
     $request->getHost()->willReturn($host);
     (new RequestMatcher())->match($request->reveal());
