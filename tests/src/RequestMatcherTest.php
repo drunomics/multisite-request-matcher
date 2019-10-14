@@ -125,6 +125,7 @@ class RequestMatcherTest extends TestCase {
     putenv("APP_SITE_DOMAIN_ALIASES__site_a=site-a.alias.com");
     putenv("APP_SITE_DOMAIN__site_b=site-b.com");
     $this->assertHostMatches('site-a.com', 'site-a', '');
+    $this->assertEquals('site-a.com', getenv('SITE_MAIN_HOST'));
     $this->assertHostMatches('site-a.alias.com', 'site-a', '');
     $this->assertHostMatches('site-b.com', 'site-b', '');
     $this->assertHostDoesNotMatch('com');
@@ -143,12 +144,64 @@ class RequestMatcherTest extends TestCase {
     putenv("APP_SITE_DOMAIN=site-b.com");
     putenv("APP_SITE_DOMAIN_ALIASES=site-b.alias.com");
     $this->assertHostMatches('site-b.com', 'site-b', '');
+    $this->assertEquals('site-b.com', getenv('SITE_MAIN_HOST'));
     $this->assertHostMatches('site-b.alias.com', 'site-b', '');
     $this->assertHostMatches('admin.site-b.com', 'site-b', 'admin');
     $this->assertHostMatches('api.site-b.com', 'site-b', 'api');
     $this->assertHostDoesNotMatch('foo.site-b.com');
     $this->assertHostDoesNotMatch('com');
     $this->assertHostDoesNotMatch('site-a.com');
+  }
+
+  /**
+   * Tests CLI usage.
+   *
+   * @covers ::getSiteVariables
+   */
+  public function testGetSiteVariables() {
+    putenv('SITE=site-b');
+    putenv('SITE_VARIANT');
+    putenv("APP_MULTISITE_DOMAIN");
+    putenv("APP_SITE_VARIANT_SEPARATOR=.");
+    putenv("APP_SITE_VARIANTS=api admin");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    putenv("APP_SITE_DOMAIN=site-b.com");
+    putenv("APP_SITE_DOMAIN_ALIASES=site-b.alias.com");
+    $vars = RequestMatcher::getSiteVariables();
+    $this->assertEquals('site-b', $vars['SITE']);
+    $this->assertEquals('site-b.com', $vars['SITE_MAIN_HOST']);
+    $this->assertEquals('site-b.com', $vars['SITE_HOST']);
+
+    // Test with multisite domain settings.
+    putenv('SITE=site-b');
+    putenv('SITE_VARIANT');
+    putenv("APP_MULTISITE_DOMAIN_PREFIX_SEPARATOR=.");
+    putenv("APP_MULTISITE_DOMAIN=localdev.space");
+    putenv("APP_SITE_VARIANT_SEPARATOR=--");
+    putenv("APP_SITE_VARIANTS");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    $vars = RequestMatcher::getSiteVariables();
+    $this->assertEquals('site-b', $vars['SITE']);
+    $this->assertEquals('site-b.localdev.space', $vars['SITE_MAIN_HOST']);
+    $this->assertEquals('site-b.localdev.space', $vars['SITE_HOST']);
+
+    // Test with per-site domains.
+    putenv('SITE=site-b');
+    putenv('SITE_VARIANT');
+    putenv("APP_MULTISITE_DOMAIN");
+    putenv("APP_SITE_VARIANT_SEPARATOR=.");
+    putenv("APP_SITE_VARIANTS=api admin");
+    putenv("APP_DEFAULT_SITE=site-a");
+    putenv("APP_SITES=site-a site-b");
+    putenv("APP_SITE_DOMAIN");
+    putenv("APP_SITE_DOMAIN__site_a=site-a.com");
+    putenv("APP_SITE_DOMAIN__site_b=site-b.com");
+    $vars = RequestMatcher::getSiteVariables();
+    $this->assertEquals('site-b', $vars['SITE']);
+    $this->assertEquals('site-b.com', $vars['SITE_MAIN_HOST']);
+    $this->assertEquals('site-b.com', $vars['SITE_HOST']);
   }
 
   /**
