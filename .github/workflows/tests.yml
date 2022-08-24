@@ -1,0 +1,20 @@
+name: CI tests for Multisite request matcher
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies with composer
+        uses: php-actions/composer@v6
+
+      - name: PHPUnit Tests
+        uses: php-actions/phpunit@v3
+        with:
+          configuration: phpunit.xml.dist
+          args: --coverage-text
+          version: 7.5
