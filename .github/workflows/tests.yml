@@ -14,7 +14,6 @@ jobs:
 
       - name: Install dependencies with composer
         run: |
-          composer config platform-check false
           composer install
 
       - name: PHPUnit Tests
