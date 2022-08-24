@@ -13,9 +13,9 @@ jobs:
           sudo update-alternatives --set php /usr/bin/php7.4
 
       - name: Install dependencies with composer
-        uses: drunomics/composer@v6
-        with:
-          php_version: 7.4
+        run: |
+          composer config platform-check false
+          composer install
 
       - name: PHPUnit Tests
         uses: drunomics/phpunit@v3
