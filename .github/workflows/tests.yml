@@ -1,0 +1,25 @@
+name: CI tests for Multisite request matcher
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        run: |
+          sudo update-alternatives --set php /usr/bin/php7.4
+
+      - name: Install dependencies with composer
+        run: |
+          composer install
+
+      - name: PHPUnit Tests
+        uses: drunomics/phpunit@v3
+        with:
+          configuration: phpunit.xml.dist
+          args: --coverage-text
+          version: 7.5
+          php_version: 7.4
