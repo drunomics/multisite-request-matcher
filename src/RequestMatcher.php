@@ -328,7 +328,7 @@ class RequestMatcher {
         }
       }
       if (empty($site)) {
-        throw new RequestMatchException("Unable to match a site domain.");
+        throw new RequestMatchException("Unable to match a site domain to (".$host.")");
       }
     }
     putenv('SITE=' . $site);
